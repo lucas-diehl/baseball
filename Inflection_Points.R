@@ -32,10 +32,8 @@ whiff_descriptions <- c("swinging_strike", "swinging_strike_blocked",
 
 result <- MLB_result |>
   mutate(swing = ifelse(type %in% c("S", "B"), 1, 0),
-         whiff = ifelse(grepl("swinging", description), 1, 0),
-         pfx_x_pv_adj = ifelse(p_throws == "R", pfx_x, -pfx_x),
-         pfx_x_pv_adj = pfx_x_pv_adj / 12,
-         pfx_z = pfx_z / 12) |>
+         whiff = ifelse(grepl("Swinging", description), 1, 0),
+         pfx_x_pv_adj = ifelse(p_throws == "R", pfx_x, -pfx_x)) |>
   as_tibble() |> 
   filter(pitch_name %in% pitch_types_allowed,
          release_speed >= 60) |>
@@ -51,7 +49,7 @@ mean_df <- result |>
 overall_df_VAA <- merge(result, mean_df) |> 
   mutate(woba_AA = woba_value - mean_woba,
          whiff_AA = if_else(swing == 1, whiff - mean_whiff, NA_real_))
- 
+
 overall_df <- overall_df_VAA %>% 
   filter(
     pfx_z <= 30 & pfx_z >= -30,
@@ -220,7 +218,7 @@ for(i in pitch_types_allowed){
   #     title = "Vert/Extension"
   #   )
   
-  all_plots <- ggarrange(Vert, nrow = 1)
+  all_plots <- ggarrange(Velo, Vert, Horz, nrow = 1)
   
   figure <- annotate_figure(all_plots, top = text_grob(paste(paste0("2023 MLB Inflection Points - ", i), "\nBlue : wOBA   Red : Whiff Rate", sep = ""), face = "bold", size = 16))
   
